@@ -1,3 +1,4 @@
+let mSend;
 function sender(mSend) {
   besked = {
     from:afsenderID, 
