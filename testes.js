@@ -1,3 +1,5 @@
+let mSend = 'DET VIRKERRRR'
+
 function preload(){
 	CastSound=loadSound("waterplop.mp3");
 	ReelSound=loadSound("haleind.mp3");
