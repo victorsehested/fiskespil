@@ -1,5 +1,8 @@
 let mSend = 'DET VIRKERRRR'
-sender(mSend);
+function mousePressed() {
+  sender(mSend);
+
+}
 
 function preload(){
 	CastSound=loadSound("waterplop.mp3");
