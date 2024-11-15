@@ -1,128 +1,112 @@
-function preload(){
-	CastSound=loadSound("waterplop.mp3");
-	ReelSound=loadSound("haleind.mp3");
-	
-}
-// GLOBALE VARIABLER
-//KASTE Global
-const castThreshold = 10; // Tærskelværdi for acceleration
-let canCast = true; // Holder styr på, om spilleren kan kaste
-let previousZ = 0; // Gemmer den tidligere z-accelerationsværdi
-let successMessage = ""; // Besked til succes
-let lastCastTime = 0; // Tidspunkt for sidste kast
+const threshold = 10; // Acceleration threshold for casting
+let canCast = true; // Determines if the player can cast
+let previousZ = 0; // Tracks previous z-acceleration value
+let successMessage = ""; // Message to display on successful cast
+let isCasting = false; // State if the cast has been thrown
+let lineLength = 20; // Vertical fishing line length
+let fishCaught = false; // State if a fish is caught
 
-//HALE Global
-let lineLength; // Startlængden af linjen
-let lastRotationZ = 0; // Gemmer den tidligere rotationZ-værdi
-const reelThreshold = 1; // Tærskelværdi for rotation
-let startspil=false;
+// For orientation control of the line
+let lineX, lineY;
 
 function setup() {
-  //KASTE
+  createCanvas(windowWidth, windowHeight);
   textSize(20);
   textAlign(CENTER, CENTER);
-  
-  // Start motion-sensoren med den ønskede threshold
-  setupMotion(castThreshold);
-  //HALE
-  createCanvas(windowWidth, windowHeight); 
-  lineLength = height / 2; // Start med en halv linje
-  background("white");
-}
 
-//KASTE
+  // Set initial line position
+  lineX = width / 2;
+  lineY = height / 4;
+
+  setupMotion(threshold); // Initialize motion listener
+}
 
 function draw() {
   background(255);
-  text("Sving telefonen fremad for at kaste linen!", width / 2, height / 2);
-  
-  // Hvis der er en ny bevægelsesværdi
+
+  // Display instructions if line hasn't been cast
+  if (!isCasting) {
+    text("Sving telefonen fremad for at kaste linen!", width / 2, height / 2);
+  }
+
+  // Check for new motion data
   if (motionSensor.hasNewValue) {
-    let motion = motionSensor.get(); // Få de nyeste accelerationsværdier
+    let motion = motionSensor.get();
 
-    // Tjek om z-aksens acceleration overskrider threshold for at simulere et kast
+    // Check z-acceleration to detect casting motion
     if (canCast) {
-      let acceleration = motion.z - previousZ; // Beregn ændringen i z-aksens acceleration
-      
-      // Kun registrer kastet, hvis accelerationen er over threshold
-      if (acceleration > castThreshold) {
-        onCastDetected();
+      let acceleration = motion.z - previousZ;
+      if (acceleration > threshold) {
+        onCastDetected(); // Cast detected
       }
-
-      // Opdater previousZ med den nuværende z-accelerationsværdi
-      previousZ = motion.z;
+      previousZ = motion.z; // Update z value
     }
   }
 
-  // Hvis der er en succesbesked, vis den
-  if (successMessage) {
-    background('lightgreen'); // Indstil baggrunden til grøn
-    text(successMessage, width / 2, height / 2 + 50); // Vis succesbesked
-  }
-  
-  if (startspil==true){
-	background('white');
-	stroke(144, 213, 255); // Linjens farve
-  strokeWeight(4);       // Linjens tykkelse
+  // If casting is in progress, show the fishing line with ocean background
+  if (isCasting) {
+    drawFishingScene(); // Draw ocean and line
 
-  // Tjek forskellen mellem den aktuelle og sidste rotationZ
-  let rotationDifference = abs(rotationZ - lastRotationZ);
-
-  // Hvis bevægelsen overstiger tærsklen, mindsker vi linjens længde
-  if (rotationDifference > reelThreshold) {
-    lineLength -= map(rotationDifference, reelThreshold, 180, 1, 5); // Justér disse værdier for at ændre hastigheden
-	if (!ReelSound.isPlaying()){
-	ReelSound.play();
-	}
+    // Check if line reaches the top to reset cast
+    if (lineLength <= 0) {
+      catchFish(); // Catch fish when line is fully reeled in
+    }
   }
 
-  // Begræns linjens længde til at være mindst 0
-  lineLength = constrain(lineLength, 0, height);
-
-  // Tegn linjen fra toppen af skærmen og nedad, afhængigt af lineLength
-  line(width / 2, 0, width / 2, lineLength);
-
-  // Opdater lastRotationZ til den aktuelle rotationZ
-  lastRotationZ = rotationZ;
-  
-}
-
-function touchStarted() {
-	  background("white");
-	  lineLength = height / 2; // Nulstil linjens længde til en halv linje ved berøring
+  // Show success message on fish catch
+  if (fishCaught) {
+    background('lightgreen');
+    text("Tillykke, du har fanget en tun!", width / 2, height / 2);
   }
 }
 
 function onCastDetected() {
-  console.log("Kast bevægelse registreret!");
-  successMessage = "Linjen kastet!"; // Sæt succesbesked
+  console.log("Cast detected!");
+  successMessage = "Linjen kastet!";
+  isCasting = true;
+  canCast = false; // Prevent further casting
+  lineLength = height / 2; // Reset line length for fishing
+}
 
-  // Send en MQTT-besked her, hvis det ønskes
+function drawFishingScene() {
+  background(0, 0, 255); // Ocean background
+  fill(255);
 
-  // Sæt canCast til false for at starte ventetiden
-  canCast = false;
-  startspil=true;
-  CastSound.play();
-  
+  // Draw the fishing line
+  stroke(255);
+  strokeWeight(4);
+  line(lineX, 0, lineX, lineY + lineLength);
 
-  // Vent i 5 sekunder, før spilleren kan kaste igen
+  // Update line position based on orientation if not caught
+  if (!fishCaught && orientationSensor.hasNewValue) {
+    let gyro = orientationSensor.get();
+    lineX = constrain(lineX + gyro.gamma, 0, width); // Horizontal movement
+    lineLength = constrain(lineLength - gyro.beta, 0, height); // Vertical reeling
+  }
+}
+
+function catchFish() {
+  fishCaught = true;
   setTimeout(() => {
-    canCast = true; // Tillad kast igen efter 5 sekunder
-    successMessage = ""; // Ryd succesbesked
-  }, 5000);
+    isCasting = false; // Reset to allow new cast
+    canCast = true;
+    fishCaught = false; // Reset fish catch state
+    successMessage = "";
+  }, 3000); // Show success message for 3 seconds
 }
 
 // Setup motion-sensor
-function setupMotion(castThreshold) {
+function setupMotion(threshold) {
   if (typeof DeviceMotionEvent.requestPermission === 'function') {
     DeviceMotionEvent.requestPermission()
       .then(permissionState => {
         if (permissionState === 'granted') {
           window.addEventListener("devicemotion", doMotion, false);
         }
-      }).catch(console.error);
-  } else { 
-    window.addEventListener("devicemotion", doMotion, false); 
+      })
+      .catch(console.error);
+  } else {
+    window.addEventListener("devicemotion", doMotion, false);
   }
 }
 
@@ -130,10 +114,29 @@ function setupMotion(castThreshold) {
 function doMotion(e) {
   motionSensor.hasNewValue = true;
   motionSensor.x = e.acceleration.x;
-  motionSensor.y = e.acceleration.y; 
+  motionSensor.y = e.acceleration.y;
   motionSensor.z = e.acceleration.z;
 }
 
+// Orientation setup
+function setupOrientation() {
+  if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+    DeviceOrientationEvent.requestPermission()
+      .then(permissionState => {
+        if (permissionState === 'granted') {
+          window.addEventListener("deviceorientation", doOrientation, false);
+        }
+      })
+      .catch(console.error);
+  } else {
+    window.addEventListener("deviceorientation", doOrientation, false);
+  }
+}
 
-
-	
+// Orientation sensor handler
+function doOrientation(e) {
+  orientationSensor.hasNewValue = true;
+  orientationSensor.alpha = e.alpha;
+  orientationSensor.beta = e.beta;
+  orientationSensor.gamma = e.gamma;
+}
