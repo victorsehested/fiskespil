@@ -1,3 +1,10 @@
+function preload(){
+  CastSound=loadSound("waterplop.mp3");
+	ReelSound=loadSound("haleind.mp3");
+	fisk=loadImage("tun.jpg");
+
+}
+
 const threshold = 10; // Acceleration threshold for casting
 let canCast = true; // Determines if the player can cast
 let previousZ = 0; // Tracks previous z-acceleration value
@@ -19,6 +26,13 @@ function setup() {
   lineY = height / 4;
 
   setupMotion(threshold); // Initialize motion listener
+}
+
+function handleOrientation(event) {
+  // Update gyroscope data
+  alpha = event.alpha; // Rotation around z-axis (0 to 360)
+  beta = event.beta; // Tilt front-to-back (-180 to 180)
+  gamma = event.gamma; // Tilt left-to-right (-90 to 90)
 }
 
 function draw() {
@@ -57,6 +71,7 @@ function draw() {
   if (fishCaught) {
     background('lightgreen');
     text("Tillykke, du har fanget en tun!", width / 2, height / 2);
+    image(fisk, width / 2 - 50, height / 2 - 50, 100, 100);
   }
 }
 
@@ -66,6 +81,7 @@ function onCastDetected() {
   isCasting = true;
   canCast = false; // Prevent further casting
   lineLength = height / 2; // Reset line length for fishing
+  CastSound.play();
 }
 
 function drawFishingScene() {
@@ -79,9 +95,15 @@ function drawFishingScene() {
 
   // Update line position based on orientation if not caught
   if (!fishCaught && orientationSensor.hasNewValue) {
+
+      // Map the gyroscope data to the canvas dimensions
+  let x = map(gamma, -45, 45, 0, width); // Map gamma to x-coordinate
+  let y = map(beta, -45, 45, 0, height); // Map beta to y-coordinate
+
+
     let gyro = orientationSensor.get();
-    lineX = constrain(lineX + gyro.gamma, 0, width); // Horizontal movement
-    lineLength = constrain(lineLength - gyro.beta, 0, height); // Vertical reeling
+    lineX = constrain(lineX + x, 0, width); // Horizontal movement
+    lineLength = constrain(lineLength - y, 0, height); // Vertical reeling
   }
 }
 
