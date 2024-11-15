@@ -1,4 +1,5 @@
 let mSend = 'DET VIRKERRRR'
+sender(mSend);
 
 function preload(){
 	CastSound=loadSound("waterplop.mp3");
