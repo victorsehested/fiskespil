@@ -1,4 +1,4 @@
-function modtager(topic, modtagetBesked) {
+function modtager(fiskespil, modtagetBesked) {
     let modtagerBuffer = JSON.parse(modtagetBesked);
 	
     let afsenderen = modtagerBuffer.from;
