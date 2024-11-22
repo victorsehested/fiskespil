@@ -6,7 +6,6 @@ function modtager(topic, modtagetBesked) {
 	{
 	    let value = modtagerBuffer.val;
 	    // do something with the received value
-      
 	}
 	
    

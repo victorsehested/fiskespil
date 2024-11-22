@@ -1,8 +1,8 @@
-// Send function to publish data to MQTT
-function sender(x) {
-  let besked = {
-    from: afsenderID, 
-    val: x
+function sender(a, b, c) {
+  besked = {
+    from:afsenderID, 
+    val:a,b,c
+    
   };
-  client.publish(topic, JSON.stringify(besked)); // Send the data over MQTT
+   client.publish(topic, JSON.stringify(besked));
 }
