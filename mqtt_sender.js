@@ -1,12 +1,11 @@
-let x = 'please';
-let y = "virk";
-
-function sender(x,y) {
-  besked = {
-    from:afsenderID, 
-    val:x,
-    val2:y
+function sender(alfa, beta, val, kastet) {
+  let besked = {
+    from: afsenderID,
+    val1: alfa,
+    val2: beta,
+    val3: val,
+    val4: kastet,
   };
-   client.publish(topic, JSON.stringify(besked));
+  client.publish(topic, JSON.stringify(besked));
+  console.log("Data sent:", besked);
 }
-
