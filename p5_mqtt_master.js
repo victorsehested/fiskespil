@@ -3,9 +3,11 @@ let b = 0;
 let c = 0;
 let motionZ = 0;
 const threshold = 10;
+let string = 'Hej jeg virker';
+
+
 function setup() {
 }
-
 
 function draw() {
     if (orientationSensor.hasNewValue){
@@ -23,7 +25,7 @@ function draw() {
 
 function mouseClicked() {
     sender();
-    setupOrientation(treshold);
+    setupOrientation(threshold);
     setupMotion();
 
 }
