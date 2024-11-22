@@ -1,9 +1,12 @@
-let string = 'Hej jeg virker';
+let x = 'please';
+let y = "virk";
 
-function sender(string) {
+function sender(x,y) {
   besked = {
     from:afsenderID, 
-    string:string
+    val:x,
+    val2:y
   };
    client.publish(topic, JSON.stringify(besked));
 }
+
