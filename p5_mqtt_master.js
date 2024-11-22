@@ -22,6 +22,8 @@ function draw() {
 }
 
 function mouseClicked() {
+    sender();
     setupOrientation(treshold);
     setupMotion();
+
 }
