@@ -1,7 +1,7 @@
-function sender(a, b, c) {
+function sender() {
   besked = {
     from:afsenderID, 
-    val:a
+    val:{Alpha:a, Beta:b, Gamma:c, Motion:MotionZ}
     
   };
    client.publish(topic, JSON.stringify(besked));

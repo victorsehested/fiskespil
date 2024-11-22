@@ -1,3 +1,7 @@
+let a = 0;
+let b = 0;
+let c = 0;
+let motionZ = 0;
 function setup() {
 }
 
@@ -8,6 +12,11 @@ function draw() {
         let a = gyro.gamma;
         let b = gyro.beta;
         let c = gyro.alpha;
+    }
+    if(motionSensor.hasNewValue){
+        let motion = motionSensor.get();
+        motionZ = motion.z;
+
     }
 }
 
