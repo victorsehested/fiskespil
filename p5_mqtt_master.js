@@ -25,7 +25,8 @@ function draw() {
 
 function mouseClicked() {
     sender();
-    setupOrientation(threshold);
-    setupMotion();
+    let string = 'Hej jeg virker';
+    //setupOrientation(threshold);
+    //setupMotion();
 
 }
