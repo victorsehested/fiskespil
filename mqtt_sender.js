@@ -1,11 +1,7 @@
-function sender(alfa, beta, val, kastet) {
-  let besked = {
-    from: afsenderID,
-    val1: alfa,
-    val2: beta,
-    val3: val,
-    val4: kastet,
+function sender(x) {
+  besked = {
+    from:afsenderID, 
+    val:x
   };
-  client.publish(topic, JSON.stringify(besked));
-  console.log("Data sent:", besked);
+   client.publish(topic, JSON.stringify(besked));
 }
