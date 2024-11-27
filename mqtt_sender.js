@@ -1,4 +1,4 @@
-function sender(x) {
+function sender(vol) {
   besked = {
     from:afsenderID, 
     val:vol

@@ -1,4 +1,4 @@
- let mic;
+let mic;
 let amplitude;
 let img;
 let bubbles = []; // array til flere bobler
