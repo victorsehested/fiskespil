@@ -21,11 +21,11 @@ function setup() {
 }
 
 function draw() {
-  background(0, 0, 0); // transperant baggrund for fade-effect
+  //background(0, 0, 0); // transperant baggrund for fade-effect
   
   // indlæs mikrofon level
   let vol = amplitude.getLevel();
-  
+  /*
   // Check if volume exceeds threshold (for detecting blow)
   if (vol > 0.1) {
     let bubbleSize = map(vol, 0, 1, 50, 150); // lydvolumen mappes til bubblesize
@@ -64,5 +64,5 @@ class Bubble {
   display() {
     imageMode(CENTER);
     image(img, this.x, this.y, this.size, this.size);
-  }
+  }*/
 }
