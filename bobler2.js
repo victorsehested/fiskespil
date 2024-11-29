@@ -25,6 +25,7 @@ function draw() {
   
   // indlæs mikrofon level
   let vol = amplitude.getLevel();
+  console.log(vol);
   /*
   // Check if volume exceeds threshold (for detecting blow)
   if (vol > 0.1) {
